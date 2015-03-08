@@ -1,0 +1,230 @@
+<html>
+<head>
+<script>
+updatelog(var x)
+{
+alert("Hello");
+alert("Contact Number: "+x+"\nYour request will be recorded for security issues.");
+}
+
+</script>
+<title>Product Information</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style type="text/css">
+.Tablecss
+{
+background: rgba(87, 55, 75, 0.83);
+border:solid 1px rgb(186, 91, 138);
+border-radius:4px;
+}
+.Tablecss td
+{
+width:28px;
+padding:10px;
+font-weight:bold;
+font-size:23px;
+}
+.Tablecss label
+{
+color:white;
+margin:5px 0px 20px 0px;
+}
+.Tablecss select
+{
+width:149px;
+font-size: 18px;
+} 
+.Tablecss button
+{
+width:80px;
+padding:10px 0px 10px 0px;
+font-size:20px;
+font-weight:bold;
+border:solid gray;
+}
+.childTable firsttd
+{
+background:rgba(87, 55, 75, 0.83);
+}
+</style>
+
+
+</head>
+
+<body>
+
+<div class="header">
+
+<div class="logo"><a href="#">
+Give & Take</a>
+</div>
+
+<div class="nav">
+<ul class="ul1" style="float:right;">
+<li><span class="li1"><a href="index.php">HOME</a></span></li>
+<li><span class="li1"><a href="logout.php"> LOGOUT</a></span></li>
+</ul>
+</div>
+
+</div>
+<div class="body">
+<table width="100%" class="Tablecss">
+<form name="myForm" action="servicecheck.php" method="post">
+<tr>
+<td>
+<label>Type of Work :</label><br><select id="tow" name="tow"><option value="Maid">Maid</option><option value="Cook">Cook</option><option value="Driver">Driver</option><option value="Nanny">Nanny</option><option value="Nurse">Nurse</option><option value="Gardener">Gardener</option><option value="Tutor">Tutor</option><option value="Guard">Guard</option><option value="Laundry">Laundry</option><option value="Others">Others</option></select>
+</td>
+<td>
+<label>Gender :</label><br><select id="gender" name="gender"><option value="M">Male</option><option value="F">Female</option><option value="T">Transgender</option></select>
+</td>
+<td>
+
+<label>Location :</label><br><select id="location" name="location"><?php 
+$con = mysql_connect("localhost","root","");
+mysql_select_db("Hackathon",$con);
+$data= mysql_query("select DISTINCT Location from Job_Seekers",$con);
+while($row=mysql_fetch_array($data))
+{
+  echo "<option value='$row[0]'>$row[0]</option>";
+}
+mysql_close($con);
+ ?></select>
+</td>
+<td>
+<label>Salary :</label><br><select id="salary" name="salary"><option value="1000"><1000</option><option value="2000"><2000</option><option value="3000"><3000</option>
+<option value="4000"><4000</option><option value="5000"><5000</option><option value="6000"><6000</option><option value="7000"><7000</option><option value="8000"><8000</option><option value="9000"><9000</option><option value="10000">10000</option>
+</select>
+</td>
+<td>
+<button type="submit" value="Filter">Filter</Button></td>
+</td>
+</tr>
+
+</form>
+</table>
+
+
+
+<?php
+session_start();
+if($_SESSION['mail'] == null)
+header('Location:index.php');
+else
+{
+	if($_POST)
+	{
+	  
+	   $tow= $_POST["tow"];
+	   $gender=$_POST["gender"];
+	   $location=$_POST["location"];
+	   $salary=$_POST["salary"];
+	  
+	   
+	   $conn=mysql_connect("localhost","root","");
+	   if($conn)
+	   {
+			
+			mysql_select_db("Hackathon" , $conn);
+	
+			
+			
+echo "<table width='100%' class='childTable'>";
+echo "<tr><th>Name</th><th>Gender</th><th>Type of Work</th><th>Salary Expected</th><th>Location</th><th>Description</th><th>Application Date</th><th>Application Time</th><th>View Contact</th></tr>";
+			
+$que1=mysql_query("select Name, Gender, Type_Of_Work, Salary, Location, Description, Reg_date, Reg_Time, Contact_No from  Job_Seekers where status='ACTIVE' && Type_Of_Work='$tow' && Gender='$gender' && Location='$location' && Salary<$salary",$conn);
+
+			
+while($rdata=mysql_fetch_array($que1))
+{
+print "<tr>";
+
+print "<td>$rdata[0]</td>";
+print "<td>$rdata[1]</td>";
+print "<td>$rdata[2]</td>";
+print "<td>$rdata[3]</td>";
+print "<td>$rdata[4]</td>";
+print "<td>$rdata[5]</td>";
+print "<td>$rdata[6]</td>";
+print "<td>$rdata[7]</td>";
+echo "<td>$rdata[8]</td>";
+
+print "</tr>";
+
+}
+}
+}
+
+	else
+	{
+	   $conn=mysql_connect("localhost","root","");
+	   if($conn)
+	   {
+			
+			mysql_select_db("Hackathon" , $conn);
+		
+echo "<table width='100%' class='childTable'>";
+echo "<tr><th>Name</th><th>Gender</th><th>Type of Work</th><th>Salary Expected</th><th>Location</th><th>Description</th><th>Application Date</th><th>Application Time</th><th>View Contact</th></tr>";
+			
+$que1=mysql_query("select Name, Gender, Type_Of_Work, Salary, Location, Description, Reg_date, Reg_Time, Contact_No from  Job_Seekers where status='ACTIVE'",$conn);
+
+			
+while($rdata=mysql_fetch_array($que1))
+{
+print "<tr>";
+
+print "<td class='firsttd'>$rdata[0]</td>("."<td>$rdata[1]</td>) - "."<td>$rdata[2]</td>";
+print "<br/>";
+print "Expected Salary : "."<td>$rdata[3]</td>";
+print "<br/>";
+print "Preferred location : "."<td>$rdata[4]</td>";
+print "<br/>";
+print "Job Description:"."</br>";
+print "<td>$rdata[5]</td>";
+print "</tr>";
+print "<tr>";
+
+print "<td>$rdata[0]</td>";
+print "<td>$rdata[1]</td>";
+print "<td>$rdata[2]</td>";
+print "<td>$rdata[3]</td>";
+print "<td>$rdata[4]</td>";
+print "<td>$rdata[5]</td>";
+print "<td>$rdata[6]</td>";
+print "<td>$rdata[7]</td>";
+echo "<td>$rdata[8]</td>";
+
+print "</tr>";
+
+}
+print "</table>";
+mysql_close($conn);
+
+
+	   
+}
+}
+}	
+?>
+
+</table>
+</div>
+
+<br/>
+<div class="footer">
+<div class="ftr">
+
+<div class="ltft">
+Designed by Khushboo Shah, Swati Anand<br>
+<ul>
+<li><a href="index.php">HOME</a></li>
+<li><a href="logout.php" >LOGOUT</a></li>
+</ul>
+</div>
+
+<div class="rtft">&copy All rights reserved</div>
+
+</div>
+</div>
+</body>
+</html>
+		
